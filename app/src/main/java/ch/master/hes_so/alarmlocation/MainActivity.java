@@ -1,11 +1,8 @@
 package ch.master.hes_so.alarmlocation;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.view.View;
+import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -15,12 +12,13 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import ch.master.hes_so.alarmlocation.List.ListMenuFragment;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, ListMenuFragment.OnListMenuFragmentListener{
 
     private FragmentManager fragmentManager;
     private ListMenuFragment listElementFragment;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,20 +26,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        //TODO DANS LE FRAGMENT LIST
-        /**
-         * Boutton "+". Permet d'ajouter des nouvelles positions ou règles de déclenchement de l'alarme
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });*/
-
 
         /**
          * Drawer contenant toutes les options propre à l'application
@@ -55,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+
         fragmentManager = getSupportFragmentManager();
         listElementFragment = new ListMenuFragment();
 
@@ -63,7 +48,6 @@ public class MainActivity extends AppCompatActivity
                 .add(R.id.content_main, listElementFragment)
                 .commit();
     }
-
 
     @Override
     public void onBackPressed() {
@@ -120,5 +104,30 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    public void OnFragmentInteraction(int fragmentCaller, int position) {
+        /*if (fragmentCaller == 5) {
+            fragmentManager.beginTransaction()
+                    .replace(R.id.content_main, listElementFragment)
+                    .addToBackStack(null)
+                    .commit();
+        }*/
+
+        if (fragmentCaller == Globals.OPEN_POSITION) {
+            Log.d("TODO", "Ouvrir pour la position");
+        }
+
+        if (fragmentCaller == Globals.OPEN_RULE) {
+            Log.d("TODO", "Ouvrir pour une règle");
+        }
+
+        if (fragmentCaller == Globals.ADD_POSITION) {
+            Log.d("TODO", "Ajout d'une position");
+        }
+
+        if (fragmentCaller == Globals.ADD_RULE) {
+            Log.d("TODO", "Ajout d'une règle");
+        }
     }
 }

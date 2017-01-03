@@ -2,18 +2,18 @@ package ch.master.hes_so.alarmlocation.List;
 
 import android.graphics.Bitmap;
 
-/**
- * Created by Pascal Bruegger on 08/01/16.
- */
-public class Element {
+import ch.master.hes_so.alarmlocation.Globals;
+
+abstract public class Element {
 
     private String elementName;
     private boolean isEnabled;
+    private int type; // 0 = position, 1 = rule
 
-    public Element(String _elementName, boolean _isEnabled){
+    public Element(String _elementName, boolean... _isEnabled){
 
         this.elementName = _elementName;
-        this.isEnabled = _isEnabled;
+        this.isEnabled = _isEnabled.length<=0 || _isEnabled[0];
     }
 
     public String getElementName() {
@@ -29,4 +29,8 @@ public class Element {
     }
 
     public void setEnable(boolean _isEnabled) { this.isEnabled = _isEnabled; }
+
+    abstract int getType();
+
+    abstract public String getTypeName();
 }

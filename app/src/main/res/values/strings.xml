@@ -5,6 +5,22 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="text">Bonjour</string>
+    <string name="text">Hello</string>
     <string name="title_activity_maps">Map</string>
+
+    <string name="add_rules">Alarm type to add ?</string>
+    <string-array name="add_choice">
+        <item>Position</item>
+        <item>Rule</item>
+    </string-array>
+
+    <string name="choice_action">Choose an action</string>
+    <string-array name="items_choice">
+        <item>Modify</item>
+        <item>Delete</item>
+    </string-array>
+
+    <string name="are_you_sure">Delete the task </string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

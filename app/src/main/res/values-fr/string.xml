@@ -1,0 +1,27 @@
+<resources>
+    <string name="AlarmLocation">AlarmLocation</string>
+
+    <string name="navigation_drawer_open">Ouvre le drawer</string>
+    <string name="navigation_drawer_close">Ferme le drawer</string>
+
+    <string name="action_settings">Options</string>
+    <string name="text">Bonjour</string>
+    <string name="title_activity_maps">Carte</string>
+
+    <string name="add_rules">"Type d'alarme à ajouter ?"</string>
+    <string-array name="add_choice">
+        <item>Position</item>
+        <item>Règle</item>
+    </string-array>
+
+    <string name="choice_action">Choisissez une action</string>
+    <string-array name="action_choice">
+        <item>Modifier</item>
+        <item>Supprimer</item>
+    </string-array>
+
+    <string name="are_you_sure">Supprimer la tâche</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+
+</resources>
