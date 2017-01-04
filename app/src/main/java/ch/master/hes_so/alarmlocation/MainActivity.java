@@ -1,7 +1,10 @@
 package ch.master.hes_so.alarmlocation;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -13,12 +16,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import ch.master.hes_so.alarmlocation.List.ListMenuFragment;
+import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectPosition;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ListMenuFragment.OnListMenuFragmentListener{
 
     private FragmentManager fragmentManager;
     private ListMenuFragment listElementFragment;
+    private MapViewFragmentSelectPosition mapViewFragmentSelectPosition;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,9 +44,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        //Ask for permission
+        if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        } else {
+            ActivityCompat.requestPermissions(MainActivity.this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
 
+        //Instantiate all fragments
         fragmentManager = getSupportFragmentManager();
         listElementFragment = new ListMenuFragment();
+        mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
 
         // Add the fragment by default
         fragmentManager.beginTransaction()
@@ -124,6 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         if (fragmentCaller == Globals.ADD_POSITION) {
             Log.d("TODO", "Ajout d'une position");
+            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition).addToBackStack(null).commit();
         }
 
         if (fragmentCaller == Globals.ADD_RULE) {
