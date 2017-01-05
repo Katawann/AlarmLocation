@@ -26,9 +26,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 import java.util.Locale;
 
@@ -50,10 +47,10 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.maps_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.map_select_position_fragment, container, false);
 
         //set layout slide listener
-        slidingLayout = (SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout);
+        slidingLayout = (SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout_pos);
 
         //Save original panel height
         panelHeight = slidingLayout.getPanelHeight();
@@ -68,7 +65,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
         placeCountry = (TextView) rootView.findViewById(R.id.textViewPlaceCountry);
         streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
 
-        mMapView = (MapView) rootView.findViewById(R.id.mapView);
+        mMapView = (MapView) rootView.findViewById(R.id.mapView_pos);
         mMapView.onCreate(savedInstanceState);
 
         mMapView.onResume(); // needed to get the map to display immediately
@@ -127,7 +124,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
                         Log.d(LOGTAG, "address : " + address + " city: " + city + " state: " + state + " country: " + country + " postal code: " + postalCode + " Name: " + knownName);
 
-                        //Download StreetView image
+                        //--- Download StreetView image ---//
                         StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/streetview?");
                         sb.append("size=600x300");
                         sb.append("&location=" + latLng.latitude +"," + latLng.longitude);
@@ -135,8 +132,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
                         Log.d(LOGTAG,"URL: " + sb.toString());
 
-                        //Download StreetView image in a new Task
-                        new DownloadImageTask(streetView).execute(sb.toString());
+                        new DownloadImageTask(streetView).execute(sb.toString());   //Download StreetView image in a new Task
 
                         //show sliding layout in bottom of screen (not expand it)
                         slidingLayout.setPanelHeight(panelHeight);
@@ -146,7 +142,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        //Sliding layout hidden
+                        //Hide the sliding layout if we only touch the map
                         slidingLayout.setPanelHeight(0);
                     }
                 });

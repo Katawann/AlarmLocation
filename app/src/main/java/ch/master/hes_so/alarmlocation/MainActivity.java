@@ -17,6 +17,7 @@ import android.view.MenuItem;
 
 import ch.master.hes_so.alarmlocation.List.ListMenuFragment;
 import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectPosition;
+import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectRules;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ListMenuFragment.OnListMenuFragmentListener{
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity
     private FragmentManager fragmentManager;
     private ListMenuFragment listElementFragment;
     private MapViewFragmentSelectPosition mapViewFragmentSelectPosition;
+    private MapViewFragmentSelectRules mapViewFragmentSelectRules;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,7 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         listElementFragment = new ListMenuFragment();
         mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
+        mapViewFragmentSelectRules = new MapViewFragmentSelectRules();
 
         // Add the fragment by default
         fragmentManager.beginTransaction()
@@ -142,6 +145,7 @@ public class MainActivity extends AppCompatActivity
 
         if (fragmentCaller == Globals.ADD_RULE) {
             Log.d("TODO", "Ajout d'une règle");
+            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectRules).addToBackStack(null).commit();
         }
     }
 }
