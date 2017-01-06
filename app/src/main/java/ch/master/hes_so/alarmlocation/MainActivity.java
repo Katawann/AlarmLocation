@@ -19,6 +19,7 @@ import android.widget.Toast;
 import ch.master.hes_so.alarmlocation.List.Element;
 import ch.master.hes_so.alarmlocation.List.ListMenuFragment;
 import ch.master.hes_so.alarmlocation.List.Position;
+import ch.master.hes_so.alarmlocation.List.Rule;
 import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectPosition;
 import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectRule;
 
@@ -29,9 +30,13 @@ public class MainActivity extends AppCompatActivity
         MapViewFragmentSelectRule.OnMapRuleFragmentListener{
 
     private FragmentManager fragmentManager;
-    private ListMenuFragment listElementFragment;
-    private MapViewFragmentSelectPosition mapViewFragmentSelectPosition;
-    private MapViewFragmentSelectRule mapViewFragmentSelectRules;
+    private ListMenuFragment listElementFragment = new ListMenuFragment();
+    private MapViewFragmentSelectPosition mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
+    private MapViewFragmentSelectRule mapViewFragmentSelectRules = new MapViewFragmentSelectRule();
+
+    /*listElementFragment = ;
+    mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
+    mapViewFragmentSelectRules = new MapViewFragmentSelectRule();*/
 
     private FeedElementDbHelper taskDbHelper;
 
@@ -66,13 +71,10 @@ public class MainActivity extends AppCompatActivity
 
         //Instantiate all fragments
         fragmentManager = getSupportFragmentManager();
-        listElementFragment = new ListMenuFragment();
-        mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
-        mapViewFragmentSelectRules = new MapViewFragmentSelectRule();
 
         // Add the fragment by default
         fragmentManager.beginTransaction()
-                .replace(R.id.content_main, listElementFragment)
+                .add(R.id.content_main, listElementFragment)
                 .commit();
 
         refreshList();
@@ -84,6 +86,10 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
+            //TODO obligé de mettre ce test sinon erreur "Fragment Already Added". Corriger si on a du temps
+            if(listElementFragment.isAdded()){
+                fragmentManager.beginTransaction().remove(listElementFragment).commit();
+            }
             super.onBackPressed();
         }
     }
@@ -140,15 +146,19 @@ public class MainActivity extends AppCompatActivity
         if (fragmentCaller == Globals.ADD_POSITION) {
             Log.d("LOG", "Add a new position");
 
-            mapViewFragmentSelectPosition.add_new_position();
-            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition)
+            MapViewFragmentSelectPosition frag = new MapViewFragmentSelectPosition();
+            frag.add_new_position();
+            fragmentManager.beginTransaction().replace(R.id.content_main, frag)
                     .addToBackStack(null)
                     .commit();
         }
 
         if (fragmentCaller == Globals.ADD_RULE) {
             Log.d("LOG", "Add a rule");
-            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectRules)
+
+            MapViewFragmentSelectRule frag = new MapViewFragmentSelectRule();
+            frag.add_new_position();
+            fragmentManager.beginTransaction().replace(R.id.content_main, frag)
                     .addToBackStack(null)
                     .commit();
         }
@@ -156,25 +166,38 @@ public class MainActivity extends AppCompatActivity
         if (fragmentCaller == Globals.OPEN_POSITION) {
             Log.d("TODO", "Open an existing position");
 
-            mapViewFragmentSelectPosition.modify_position((Position) taskDbHelper.getElementWithId(id));
-            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition)
+            MapViewFragmentSelectPosition frag = new MapViewFragmentSelectPosition();
+            frag.modify_position((Position) taskDbHelper.getElementWithId(id));
+            fragmentManager.beginTransaction().replace(R.id.content_main, frag)
                     .addToBackStack(null)
                     .commit();
         }
 
         if (fragmentCaller == Globals.OPEN_RULE) {
             Log.d("TODO", "Open an existing rule");
+
+            MapViewFragmentSelectRule frag = new MapViewFragmentSelectRule();
+            frag.modify_position((Rule) taskDbHelper.getElementWithId(id));
+            fragmentManager.beginTransaction().replace(R.id.content_main, frag)
+                    .addToBackStack(null)
+                    .commit();
         }
 
         if (fragmentCaller == Globals.DELETE_ELEMENT){
             taskDbHelper.deleteElement(id);
+            refreshList();
             Toast.makeText(getApplicationContext(),R.string.delete_element,Toast.LENGTH_SHORT).show();
         }
     }
 
     @Override
     public void OnReturnFromPosition(Element _element) {
-        taskDbHelper.addNewElement(_element);
+
+        if (_element.getId() == -1){ //we create a new element
+            taskDbHelper.addNewElement(_element);
+        }else{ //otherwise the element already exist so we just modify it
+            taskDbHelper.modifyElement(_element);
+        }
 
         if(listElementFragment != null){
             listElementFragment.updateList(taskDbHelper.getElementFromDB());
@@ -186,7 +209,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void OnReturnFromRule(Element _element) {
-        taskDbHelper.addNewElement(_element);
+
+        if (_element.getId() == -1){ //we create a new element
+            taskDbHelper.addNewElement(_element);
+        }else{ //otherwise the element already exist so we just modify it
+            taskDbHelper.modifyElement(_element);
+        }
 
         if(listElementFragment != null){
             listElementFragment.updateList(taskDbHelper.getElementFromDB());

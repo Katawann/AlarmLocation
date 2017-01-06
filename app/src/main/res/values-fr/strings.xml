@@ -8,6 +8,11 @@
     <string name="delete_element">Tâche supprimée</string>
     <string name="modify">Modifier</string>
     <string name="information">V Ajouter des informations V</string>
-    <string name="radius">Activation de l\'alarme (km)</string>
+    <string name="radius">Proximité</string>
     <string name="show_map">^ Retourner à la carte ^</string>
+    <string name="end">Fin</string>
+    <string name="start">Début</string>
+    <string name="start_hour">Heure de départ</string>
+    <string name="end_hour">Heure de fin</string>
+    <string name="set_point">Ajouter ce point ?</string>
 </resources>

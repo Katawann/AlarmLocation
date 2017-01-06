@@ -31,6 +31,11 @@
     <string name="delete_element">Task deleted</string>
     <string name="modify">Modify</string>
     <string name="information">V Give information V</string>
-    <string name="radius">Activation of the alarm (km)</string>
+    <string name="radius">Proximity</string>
     <string name="show_map">^ Return to the map ^</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
+    <string name="start_hour">Choose a start hour</string>
+    <string name="end_hour">Choose a end hour</string>
+    <string name="set_point">Set this point ?</string>
 </resources>

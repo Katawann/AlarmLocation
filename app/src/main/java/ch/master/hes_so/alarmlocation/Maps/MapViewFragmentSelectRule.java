@@ -1,6 +1,7 @@
 package ch.master.hes_so.alarmlocation.Maps;
 
 import android.app.Activity;
+import android.app.TimePickerDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.location.Address;
@@ -8,6 +9,7 @@ import android.location.Geocoder;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -34,8 +37,9 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.List.Element;
-import ch.master.hes_so.alarmlocation.List.Position;
+import ch.master.hes_so.alarmlocation.List.Rule;
 import ch.master.hes_so.alarmlocation.R;
 
 /**
@@ -57,13 +61,23 @@ public class MapViewFragmentSelectRule extends Fragment {
     private EditText etxt_addressLocation;
     private SeekBar sk_radius;
     private TextView txt_radius;
+    private TextView time_start;
+    private TextView time_end;
 
     private ImageView streetView;
     private Button add_position;
-    private Position position;
+    private Rule rule;
     private final static String LOGTAG = "MapViewFragment";
 
     OnMapRuleFragmentListener mCallback;
+
+    public void modify_position(Rule _rule) {
+        rule = _rule;
+    }
+
+    public void add_new_position() {
+        rule = null;
+    }
 
     public interface OnMapRuleFragmentListener{
         void OnReturnFromRule(Element _element);
@@ -103,20 +117,35 @@ public class MapViewFragmentSelectRule extends Fragment {
         streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
         add_position = (Button) rootView.findViewById(R.id.btnAddPlace);
         sk_radius = (SeekBar) rootView.findViewById(R.id.sk_radius_pos);
-        sk_radius.setMax(50); //TODO define a max value
+        sk_radius.setMax(Globals.MAX_RADIUS);
         txt_radius = (TextView) rootView.findViewById(R.id.txt_radius);
+        time_start = (TextView) rootView.findViewById(R.id.txt_start);
+        time_end = (TextView) rootView.findViewById(R.id.txt_end);
 
 
-        if(position != null){
-            sw_enabled.setChecked(position.isEnabled());
-            etxt_namePosition.setText(position.getElementName());
-            etxt_addressLocation.setText(position.getAddress());
-            sk_radius.setProgress(position.getRadius());
+        if(rule != null){
+            sw_enabled.setChecked(rule.isEnabled());
+            etxt_namePosition.setText(rule.getElementName());
+            etxt_addressLocation.setText(rule.getAddress());
+            sk_radius.setProgress(rule.getRadius());
+            txt_radius.setText(String.valueOf(rule.getRadius()));
+
             //TODO streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
+            //TODO init start and end
 
+            slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            slidingLayout.setPanelHeight(panelHeight);
+            txt_title.setHeight(panelHeight);
+            txt_title.setText(R.string.information);
             add_position.setText(R.string.modify);
+        }else{
+            slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            slidingLayout.setPanelHeight(0);
         }
 
+        /**
+         *  ALL THE LISTENER
+         */
         sk_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -134,25 +163,57 @@ public class MapViewFragmentSelectRule extends Fragment {
             }
         });
 
+        time_start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        time_start.setText( selectedHour + ":" + selectedMinute);
+                    }
+                }, 0, 0, true);//Yes 24 hour time
+                mTimePicker.setTitle(R.string.start_hour);
+
+                  mTimePicker.show();
+            }
+        });
+
+        time_end.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                TimePickerDialog mTimePicker;
+                mTimePicker = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                        time_end.setText( selectedHour + ":" + selectedMinute);
+                    }
+                }, 0, 0, true);//Yes 24 hour time
+                mTimePicker.setTitle(R.string.end_hour);
+                mTimePicker.show();
+            }
+        });
+
+
         add_position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO check information before to go back + add description field
-                if(position == null){
-                    position = new Position(etxt_namePosition.getText().toString(),
+                //TODO check information before to go back + add description field (or delete it)
+                if(rule == null){
+                    rule = new Rule(etxt_namePosition.getText().toString(),
                             sw_enabled.isChecked(),
                             "",
                             etxt_addressLocation.getText().toString(),
                             sk_radius.getProgress());
                 }else{
-                    position.setElementName(etxt_namePosition.getText().toString());
-                    position.setEnable(sw_enabled.isChecked());
-                    position.setDescription("");
-                    position.setAddress(etxt_addressLocation.getText().toString());
-                    position.setRadius(sk_radius.getProgress());
+                    rule.setElementName(etxt_namePosition.getText().toString());
+                    rule.setEnable(sw_enabled.isChecked());
+                    rule.setDescription("");
+                    rule.setAddress(etxt_addressLocation.getText().toString());
+                    rule.setRadius(sk_radius.getProgress());
                 }
 
-                mCallback.OnReturnFromRule(position);
+                mCallback.OnReturnFromRule(rule);
             }
         });
 
@@ -169,6 +230,7 @@ public class MapViewFragmentSelectRule extends Fragment {
 
             @Override
             public void onPanelExpanded(View panel) {
+
                 txt_title.setText(R.string.show_map);
             }
 
@@ -215,10 +277,8 @@ public class MapViewFragmentSelectRule extends Fragment {
                         Marker locationMarker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Set this point"));
                         locationMarker.showInfoWindow();
                         //locationMarker.setDraggable(true);
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                        txt_title.setHeight(panelHeight);
-                        txt_title.setText(R.string.information);
+                        //TODO un peu pertrubant que la map bouge quand on appuie (remets si tu préfères)
+                        // googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                         //Fill address information before we can show the sliding panel
                         Geocoder geocoder;
@@ -261,6 +321,8 @@ public class MapViewFragmentSelectRule extends Fragment {
 
                         //show sliding layout in bottom of screen (not expand it)
                         slidingLayout.setPanelHeight(panelHeight);
+                        txt_title.setHeight(panelHeight);
+                        txt_title.setText(R.string.information);
                     }
                 });
 

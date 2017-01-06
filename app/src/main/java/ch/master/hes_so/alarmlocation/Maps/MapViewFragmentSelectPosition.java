@@ -35,6 +35,7 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 
+import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.List.Element;
 import ch.master.hes_so.alarmlocation.List.Position;
 import ch.master.hes_so.alarmlocation.R;
@@ -112,18 +113,28 @@ public class MapViewFragmentSelectPosition extends Fragment {
         streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
         add_position = (Button) rootView.findViewById(R.id.btnAddPlace);
         sk_radius = (SeekBar) rootView.findViewById(R.id.sk_radius_pos);
-        sk_radius.setMax(50); //TODO define a max value
+        sk_radius.setMax(Globals.MAX_RADIUS);
         txt_radius = (TextView) rootView.findViewById(R.id.txt_radius);
 
 
         if(position != null){
+            slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
+            slidingLayout.setPanelHeight(panelHeight);
+
             sw_enabled.setChecked(position.isEnabled());
             etxt_namePosition.setText(position.getElementName());
             etxt_addressLocation.setText(position.getAddress());
             sk_radius.setProgress(position.getRadius());
+            txt_radius.setText(String.valueOf(position.getRadius()));
             //TODO streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
+            //TODO add marqueur et zoom sur le point déjà existant
 
+            txt_title.setHeight(panelHeight);
+            txt_title.setText(R.string.information);
             add_position.setText(R.string.modify);
+        }else{
+            slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
+            slidingLayout.setPanelHeight(0);
         }
 
         sk_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -146,7 +157,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
         add_position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO check information before to go back + add description field
+                //TODO check information before to go back + add description field (or delete it)
                 if(position == null){
                     position = new Position(etxt_namePosition.getText().toString(),
                             sw_enabled.isChecked(),
@@ -178,6 +189,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
             @Override
             public void onPanelExpanded(View panel) {
+
                 txt_title.setText(R.string.show_map);
             }
 
@@ -224,10 +236,8 @@ public class MapViewFragmentSelectPosition extends Fragment {
                         Marker locationMarker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Set this point"));
                         locationMarker.showInfoWindow();
                         //locationMarker.setDraggable(true);
-                        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-                        txt_title.setHeight(panelHeight);
-                        txt_title.setText(R.string.information);
+                        //TODO un peu pertrubant que la map bouge quand on appuie... (remets si tu préfères)
+                        // googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                         //Fill address information before we can show the sliding panel
                         Geocoder geocoder;
@@ -270,6 +280,8 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
                         //show sliding layout in bottom of screen (not expand it)
                         slidingLayout.setPanelHeight(panelHeight);
+                        txt_title.setHeight(panelHeight);
+                        txt_title.setText(R.string.information);
                     }
                 });
 
@@ -345,6 +357,4 @@ public class MapViewFragmentSelectPosition extends Fragment {
             bmImage.setImageBitmap(result);
         }
     }
-
-
 }

@@ -78,9 +78,9 @@ public class ListMenuFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (itemsOfElement.get(position).getType() == Globals.TYPE_POSITION){
-                    mCallback.OnInteractionListMenu(Globals.OPEN_POSITION, position);
+                    mCallback.OnInteractionListMenu(Globals.OPEN_POSITION, itemsOfElement.get(position).getId());
                 }else if (itemsOfElement.get(position).getType() == Globals.TYPE_RULE){
-                    mCallback.OnInteractionListMenu(Globals.OPEN_RULE, position);
+                    mCallback.OnInteractionListMenu(Globals.OPEN_RULE, itemsOfElement.get(position).getId());
                 }
             }
         });
@@ -112,7 +112,6 @@ public class ListMenuFragment extends Fragment {
                             case DialogInterface.BUTTON_POSITIVE:
                                 //Yes button clicked
                                 mCallback.OnInteractionListMenu(Globals.DELETE_ELEMENT,adapter.getItem(index).getId());
-                                adapter.remove(adapter.getItem(index));
                                 dialog.dismiss();
                                 break;
 
@@ -148,10 +147,6 @@ public class ListMenuFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-    }
-
-    public void create_element(){
-
     }
 
     private void add_element(){

@@ -7,7 +7,7 @@
     android:gravity="bottom"
     android:layout_gravity="bottom">
 
-        <TextView
+    <TextView
             android:text="TextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -21,7 +21,8 @@
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="10sp">
+            android:paddingTop="10sp"
+            android:layout_weight="1">
 
             <TextView
                 android:text="@string/name_position"
@@ -44,7 +45,7 @@
 
         </LinearLayout>
 
-        <EditText
+    <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
@@ -53,30 +54,108 @@
             android:layout_marginLeft="20sp"
             android:fontFamily="sans-serif"
             android:hint="@string/give_name_task"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+        android:layout_weight="1" />
 
-    <TextView
-            android:text="@string/radius"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textViewPlaceLocation"
-            android:layout_marginLeft="20dp"
-            android:layout_marginRight="20dp"
-            android:fontFamily="sans-serif"
-            android:gravity="bottom"
-            android:textSize="18sp" />
-
-    <SeekBar
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/sk_radius_pos" />
+        android:layout_weight="1"
+        android:layout_gravity="top">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/txt_radius"
-        android:gravity="center"
-        android:text="0" />
+        <TextView
+            android:layout_height="match_parent"
+            android:id="@+id/txt_radius"
+            android:gravity="bottom|center"
+            android:text="0"
+            android:layout_weight="0.5"
+            android:layout_width="0dp"
+            android:layout_marginBottom="10sp"
+            android:textSize="15sp" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3">
+
+            <TextView
+                    android:text="@string/radius"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/textViewPlaceLocation"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
+                    android:fontFamily="sans-serif"
+                    android:gravity="bottom"
+                    android:textSize="18sp" />
+
+            <SeekBar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/sk_radius_pos" />
+
+        </LinearLayout>
+
+        <CheckBox
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/check_schedule"
+            android:layout_weight="0.5"
+            android:elevation="0dp"
+            android:gravity="top|bottom|start" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:text="@string/start"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView4"
+                android:gravity="center"
+                android:textSize="16sp" />
+
+            <TextView
+                android:text="00:00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txt_start"
+                android:textSize="16sp"
+                android:gravity="center" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <TextView
+                android:text="@string/end"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView5"
+                android:gravity="center"
+                android:textSize="16sp" />
+
+            <TextView
+                android:text="00:00"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/txt_end"
+                android:textSize="16sp"
+                android:gravity="center"
+                android:clickable="true" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <TextView
         android:text="@string/address"
@@ -87,7 +166,8 @@
         android:layout_marginRight="20dp"
         android:fontFamily="sans-serif"
         android:gravity="bottom"
-        android:textSize="18sp" />
+        android:textSize="18sp"
+        android:layout_weight="1" />
 
     <EditText
             android:layout_width="match_parent"
@@ -96,7 +176,7 @@
             android:ems="10"
             android:id="@+id/etxt_address"
             android:layout_marginLeft="20sp"
-            android:layout_weight="1"
+            android:layout_weight="3"
         android:textSize="14sp" />
 
         <ImageView
@@ -104,7 +184,7 @@
             android:id="@+id/imageViewStreetView"
             android:layout_width="match_parent"
 
-            android:layout_weight="3"
+            android:layout_weight="10"
             android:layout_height="wrap_content"
             android:contentDescription="" />
 
@@ -116,7 +196,7 @@
             android:background="@color/colorPrimaryDark"
             android:textColor="@color/common_google_signin_btn_text_dark_default"
             android:textSize="24sp"
-            android:layout_weight="0.5" />
+            android:layout_weight="1" />
 
 </LinearLayout>
 

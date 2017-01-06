@@ -10,6 +10,7 @@ import java.util.ArrayList;
 
 import ch.master.hes_so.alarmlocation.List.Element;
 import ch.master.hes_so.alarmlocation.List.Position;
+import ch.master.hes_so.alarmlocation.List.Rule;
 
 
 /**
@@ -28,6 +29,8 @@ public class FeedElementDbHelper extends SQLiteOpenHelper {
     public static final String KEY_DESCRIPTION = "description";
     public static final String KEY_ADDRESS = "address";
     public static final String KEY_RADIUS = "radius";
+
+    //TODO add end and start time for Rule (peut être plus encore à voir...)
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " ("
@@ -99,7 +102,6 @@ public class FeedElementDbHelper extends SQLiteOpenHelper {
     }
 
     public Element getElementWithId(int _id){
-        Element element;
 
         String[] result_column = new String[] { KEY_ID, KEY_NAME,
                 KEY_TYPE, KEY_ENABLED, KEY_DESCRIPTION, KEY_ADDRESS, KEY_RADIUS};
@@ -113,11 +115,21 @@ public class FeedElementDbHelper extends SQLiteOpenHelper {
             boolean isEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENABLED)) > 0;
 
             if (_id == id){
-                return new Position(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
-                        isEnabled,
-                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_ADDRESS)),
-                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_RADIUS)));
+                if (type == Globals.TYPE_POSITION) {
+                    return new Position(id,
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
+                            isEnabled,
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_ADDRESS)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(KEY_RADIUS)));
+                }else if(type == Globals.TYPE_RULE){
+                    return new Rule(id,
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
+                            isEnabled,
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)),
+                            cursor.getString(cursor.getColumnIndexOrThrow(KEY_ADDRESS)),
+                            cursor.getInt(cursor.getColumnIndexOrThrow(KEY_RADIUS)));
+                }
             }
         }
 
@@ -142,13 +154,19 @@ public class FeedElementDbHelper extends SQLiteOpenHelper {
             boolean isEnabled = cursor.getInt(cursor.getColumnIndexOrThrow(KEY_ENABLED)) > 0;
 
             if (type == Globals.TYPE_POSITION){
-                taskList.add(new Position(cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
+                taskList.add(new Position(id,
+                                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
                                         isEnabled,
                                         cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)),
                                         cursor.getString(cursor.getColumnIndexOrThrow(KEY_ADDRESS)),
                                         cursor.getInt(cursor.getColumnIndexOrThrow(KEY_RADIUS))));
             }else if (type == Globals.TYPE_RULE){
-                //TODO
+                taskList.add(new Rule(id,
+                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_NAME)),
+                        isEnabled,
+                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_DESCRIPTION)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(KEY_ADDRESS)),
+                        cursor.getInt(cursor.getColumnIndexOrThrow(KEY_RADIUS))));
             }
         }
 

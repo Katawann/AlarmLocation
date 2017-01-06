@@ -7,7 +7,6 @@ import ch.master.hes_so.alarmlocation.Globals;
 
 abstract public class Element {
 
-    private static int idGlobal = 0;
     private int id;
     private String elementName;
     private boolean isEnabled;
@@ -15,19 +14,17 @@ abstract public class Element {
     private String address;
     private int radius;
 
-    public Element(String _elementName, boolean _isEnabled, String _description, String _address, int _radius){
+    public Element(int _id, String _elementName, boolean _isEnabled, String _description, String _address, int _radius){
 
-        this.id = idGlobal;
-        idGlobal++;
+        this.id = _id;
         this.elementName = _elementName;
         this.isEnabled = _isEnabled;
         this.description = _description;
         this.address = _address;
-        this.radius = _radius;
-    }
+        this.radius = _radius;    }
 
     public int getId() { return id;}
-    public void setId(int _id) { this.id = _id; }
+  //  public void setId(int _id) { this.id = _id; }
 
     public String getElementName() {
         return elementName;
