@@ -6,12 +6,11 @@ import android.graphics.BitmapFactory;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.AsyncTask;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewDebug;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -43,7 +42,7 @@ import ch.master.hes_so.alarmlocation.R;
  * Created by Warrior on 04.01.2017.
  */
 
-public class MapViewFragmentSelectPosition extends Fragment {
+public class MapViewFragmentSelectRule extends Fragment {
 
     MapView mMapView;
     private GoogleMap googleMap;
@@ -64,35 +63,28 @@ public class MapViewFragmentSelectPosition extends Fragment {
     private Position position;
     private final static String LOGTAG = "MapViewFragment";
 
-    OnMapPositionFragmentListener mCallback;
+    OnMapRuleFragmentListener mCallback;
 
-    public interface OnMapPositionFragmentListener{
-        void OnReturnFromPosition(Element _element);
+    public interface OnMapRuleFragmentListener{
+        void OnReturnFromRule(Element _element);
     }
 
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mCallback = (OnMapPositionFragmentListener) activity;
+            mCallback = (OnMapRuleFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnReturnFromPosition"); }
-    }
-
-    public void add_new_position(){
-        position = null;
-    }
-    public void modify_position(Position _position){
-        position = _position;
+                    + " must implement OnReturnFromRule"); }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.map_select_position_fragment, container, false);
+        View rootView = inflater.inflate(R.layout.map_select_rules_fragment, container, false);
 
         //set layout slide listener
-        slidingLayout = (SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout_pos);
+        slidingLayout = (SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout_rule);
 
         //Save original panel height
         panelHeight = slidingLayout.getPanelHeight();
@@ -101,7 +93,6 @@ public class MapViewFragmentSelectPosition extends Fragment {
         slidingLayout.setPanelHeight(0);
 
         //--- Get layout ---//
-
         /*placeAddress = (TextView) rootView.findViewById(R.id.textViewPlaceAddress);
         placeLocation = (TextView) rootView.findViewById(R.id.textViewPlaceLocation);
         placeCountry = (TextView) rootView.findViewById(R.id.textViewPlaceCountry);*/
@@ -161,7 +152,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
                     position.setRadius(sk_radius.getProgress());
                 }
 
-                mCallback.OnReturnFromPosition(position);
+                mCallback.OnReturnFromRule(position);
             }
         });
 
@@ -192,7 +183,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
             }
         });
 
-        mMapView = (MapView) rootView.findViewById(R.id.mapView_pos);
+        mMapView = (MapView) rootView.findViewById(R.id.mapView_rules);
         mMapView.onCreate(savedInstanceState);
 
         mMapView.onResume(); // needed to get the map to display immediately

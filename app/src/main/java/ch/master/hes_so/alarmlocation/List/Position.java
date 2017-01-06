@@ -7,14 +7,13 @@ import ch.master.hes_so.alarmlocation.Globals;
 /**
  * Created by quent on 02/01/2017.
  */
-
 public class Position extends Element {
-    public Position(String _elementName, boolean... _isEnabled) {
-        super(_elementName, _isEnabled);
+    public Position(String _elementName, boolean _isEnabled, String _description, String _address, int _radius) {
+        super(_elementName, _isEnabled, _description, _address, _radius);
     }
 
     @Override
-    int getType() {
+    public int getType() {
         return Globals.TYPE_POSITION;
     }
 

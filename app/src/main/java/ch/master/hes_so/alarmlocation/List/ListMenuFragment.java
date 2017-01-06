@@ -23,7 +23,6 @@ import ch.master.hes_so.alarmlocation.R;
 /**
  * Created by quent on 03/11/2016.
  */
-
 public class ListMenuFragment extends Fragment {
 
     private ArrayList<Element> itemsOfElement = new ArrayList<Element>();
@@ -31,7 +30,7 @@ public class ListMenuFragment extends Fragment {
     OnListMenuFragmentListener mCallback;
 
     public interface OnListMenuFragmentListener{
-        void OnFragmentInteraction(int fragmentCaller, int position);
+        void OnInteractionListMenu(int fragmentCaller, int id);
     }
 
     @Override
@@ -41,9 +40,22 @@ public class ListMenuFragment extends Fragment {
             mCallback = (OnListMenuFragmentListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteraction"); }
+                    + " must implement OnInteractionListMenu"); }
     }
 
+    public void updateList(ArrayList<Element> _list){
+        this.itemsOfElement = _list;
+
+        if(adapter!= null){
+            adapter.clear();
+
+            for(int i=0; i<itemsOfElement.size(); i++){
+                adapter.add(itemsOfElement.get(i));
+            }
+
+            adapter.notifyDataSetChanged();
+        }
+    }
 
     public ListMenuFragment() { }
 
@@ -51,12 +63,6 @@ public class ListMenuFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-
-        itemsOfElement.add(new Position("Cupcake", false));
-        itemsOfElement.add(new Position("Donut"));
-        itemsOfElement.add(new Rule("Eclair"));
-        itemsOfElement.add(new Position("Kit kat"));
-        itemsOfElement.add(new Rule("Lolipop", false));
     }
 
     @Override
@@ -71,7 +77,11 @@ public class ListMenuFragment extends Fragment {
         customListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mCallback.OnFragmentInteraction(Globals.OPEN_POSITION, position);
+                if (itemsOfElement.get(position).getType() == Globals.TYPE_POSITION){
+                    mCallback.OnInteractionListMenu(Globals.OPEN_POSITION, position);
+                }else if (itemsOfElement.get(position).getType() == Globals.TYPE_RULE){
+                    mCallback.OnInteractionListMenu(Globals.OPEN_RULE, position);
+                }
             }
         });
 
@@ -101,6 +111,7 @@ public class ListMenuFragment extends Fragment {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
                                 //Yes button clicked
+                                mCallback.OnInteractionListMenu(Globals.DELETE_ELEMENT,adapter.getItem(index).getId());
                                 adapter.remove(adapter.getItem(index));
                                 dialog.dismiss();
                                 break;
@@ -161,12 +172,12 @@ public class ListMenuFragment extends Fragment {
 
                 if (which == 0){
 
-                    mCallback.OnFragmentInteraction(Globals.ADD_POSITION,-1);
+                    mCallback.OnInteractionListMenu(Globals.ADD_POSITION,-1);
                     dialog.dismiss();
 
                 }else if(which == 1){
 
-                    mCallback.OnFragmentInteraction(Globals.ADD_RULE,-1);
+                    mCallback.OnInteractionListMenu(Globals.ADD_RULE,-1);
                     dialog.dismiss();
                 }
             }

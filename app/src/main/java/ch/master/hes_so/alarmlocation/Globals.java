@@ -18,4 +18,6 @@ abstract public class Globals{
     public static final int TYPE_POSITION = 0;
     public static final int TYPE_RULE = 1;
 
+    public static final int DELETE_ELEMENT = 33;
+
 }

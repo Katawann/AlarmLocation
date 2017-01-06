@@ -1,5 +1,4 @@
 <resources>
-    <string name="AlarmLocation">AlarmLocation</string>
 
     <string name="navigation_drawer_open">Ouvre le drawer</string>
     <string name="navigation_drawer_close">Ferme le drawer</string>

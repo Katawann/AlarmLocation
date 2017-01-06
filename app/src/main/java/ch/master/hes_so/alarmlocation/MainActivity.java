@@ -14,23 +14,34 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
+import ch.master.hes_so.alarmlocation.List.Element;
 import ch.master.hes_so.alarmlocation.List.ListMenuFragment;
+import ch.master.hes_so.alarmlocation.List.Position;
 import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectPosition;
-import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectRules;
+import ch.master.hes_so.alarmlocation.Maps.MapViewFragmentSelectRule;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, ListMenuFragment.OnListMenuFragmentListener{
+        implements NavigationView.OnNavigationItemSelectedListener,
+        ListMenuFragment.OnListMenuFragmentListener,
+        MapViewFragmentSelectPosition.OnMapPositionFragmentListener,
+        MapViewFragmentSelectRule.OnMapRuleFragmentListener{
 
     private FragmentManager fragmentManager;
     private ListMenuFragment listElementFragment;
     private MapViewFragmentSelectPosition mapViewFragmentSelectPosition;
-    private MapViewFragmentSelectRules mapViewFragmentSelectRules;
+    private MapViewFragmentSelectRule mapViewFragmentSelectRules;
+
+    private FeedElementDbHelper taskDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        taskDbHelper = new FeedElementDbHelper(this);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -57,12 +68,14 @@ public class MainActivity extends AppCompatActivity
         fragmentManager = getSupportFragmentManager();
         listElementFragment = new ListMenuFragment();
         mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
-        mapViewFragmentSelectRules = new MapViewFragmentSelectRules();
+        mapViewFragmentSelectRules = new MapViewFragmentSelectRule();
 
         // Add the fragment by default
         fragmentManager.beginTransaction()
-                .add(R.id.content_main, listElementFragment)
+                .replace(R.id.content_main, listElementFragment)
                 .commit();
+
+        refreshList();
     }
 
     @Override
@@ -122,30 +135,69 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public void OnFragmentInteraction(int fragmentCaller, int position) {
-        /*if (fragmentCaller == 5) {
-            fragmentManager.beginTransaction()
-                    .replace(R.id.content_main, listElementFragment)
-                    .addToBackStack(null)
-                    .commit();
-        }*/
-
-        if (fragmentCaller == Globals.OPEN_POSITION) {
-            Log.d("TODO", "Ouvrir pour la position");
-        }
-
-        if (fragmentCaller == Globals.OPEN_RULE) {
-            Log.d("TODO", "Ouvrir pour une règle");
-        }
+    public void OnInteractionListMenu(int fragmentCaller, int id) {
 
         if (fragmentCaller == Globals.ADD_POSITION) {
-            Log.d("TODO", "Ajout d'une position");
-            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition).addToBackStack(null).commit();
+            Log.d("LOG", "Add a new position");
+
+            mapViewFragmentSelectPosition.add_new_position();
+            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition)
+                    .addToBackStack(null)
+                    .commit();
         }
 
         if (fragmentCaller == Globals.ADD_RULE) {
-            Log.d("TODO", "Ajout d'une règle");
-            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectRules).addToBackStack(null).commit();
+            Log.d("LOG", "Add a rule");
+            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectRules)
+                    .addToBackStack(null)
+                    .commit();
         }
+
+        if (fragmentCaller == Globals.OPEN_POSITION) {
+            Log.d("TODO", "Open an existing position");
+
+            mapViewFragmentSelectPosition.modify_position((Position) taskDbHelper.getElementWithId(id));
+            fragmentManager.beginTransaction().replace(R.id.content_main, mapViewFragmentSelectPosition)
+                    .addToBackStack(null)
+                    .commit();
+        }
+
+        if (fragmentCaller == Globals.OPEN_RULE) {
+            Log.d("TODO", "Open an existing rule");
+        }
+
+        if (fragmentCaller == Globals.DELETE_ELEMENT){
+            taskDbHelper.deleteElement(id);
+            Toast.makeText(getApplicationContext(),R.string.delete_element,Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public void OnReturnFromPosition(Element _element) {
+        taskDbHelper.addNewElement(_element);
+
+        if(listElementFragment != null){
+            listElementFragment.updateList(taskDbHelper.getElementFromDB());
+        }
+
+        fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
+                .commit();
+    }
+
+    @Override
+    public void OnReturnFromRule(Element _element) {
+        taskDbHelper.addNewElement(_element);
+
+        if(listElementFragment != null){
+            listElementFragment.updateList(taskDbHelper.getElementFromDB());
+        }
+
+        fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
+                .commit();
+    }
+
+    public void refreshList(){
+
+        listElementFragment.updateList(taskDbHelper.getElementFromDB());
     }
 }

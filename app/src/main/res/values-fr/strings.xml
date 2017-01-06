@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="AlarmLocation" translatable="false"></string>
+    <string name="add">Ajouter</string>
+    <string name="address">Adresse</string>
+    <string name="name_position">Nom de la tâche</string>
+    <string name="give_name_task">Donner un nom à la tâche</string>
+    <string name="delete_element">Tâche supprimée</string>
+    <string name="modify">Modifier</string>
+    <string name="information">V Ajouter des informations V</string>
+    <string name="radius">Activation de l\'alarme (km)</string>
+    <string name="show_map">^ Retourner à la carte ^</string>
+</resources>
