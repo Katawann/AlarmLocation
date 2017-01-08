@@ -22,8 +22,9 @@
     <string name="supermarket">Supermarché</string>
     <string name="keyword">Mot-clé</string>
     <string name="hairdresser">Coiffeur</string>
-    <string name="food_store">Magasin de nourriture</string>
+    <string name="food_store">Nourriture</string>
     <string name="enter_a_keyword">Entrer un mot-clé</string>
     <string name="cafe">Café</string>
     <string name="bar">Bar</string>
+    <string name="meters">mètres</string>
 </resources>

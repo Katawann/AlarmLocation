@@ -5,23 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.os.Parcelable;
 import android.os.RemoteException;
-import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -53,10 +48,6 @@ public class MainActivity extends AppCompatActivity
 
     private String LOGTAG = "MainActivity";
 
-    /*listElementFragment = ;
-    mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
-    mapViewFragmentSelectRules = new MapViewFragmentSelectRule();*/
-
     private FeedElementDbHelper taskDbHelper;
 
     @Override
@@ -79,18 +70,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        /**
-         * Drawer contenant toutes les options propre à l'application
-         */
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
         //Ask for permission
         if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
@@ -111,16 +90,8 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            //TODO obligé de mettre ce test sinon erreur "Fragment Already Added". Corriger si on a du temps
-            if(listElementFragment.isAdded()){
-                fragmentManager.beginTransaction().remove(listElementFragment).commit();
-            }
-            super.onBackPressed();
-        }
+
+        super.onBackPressed();
     }
 
     @Override
@@ -165,8 +136,6 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -240,6 +209,7 @@ public class MainActivity extends AppCompatActivity
             listElementFragment.updateList(taskDbHelper.getElementFromDB());
         }
 
+        getSupportFragmentManager().popBackStack();
         fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
                 .commit();
 
@@ -262,6 +232,7 @@ public class MainActivity extends AppCompatActivity
             listElementFragment.updateList(taskDbHelper.getElementFromDB());
         }
 
+        getSupportFragmentManager().popBackStack();
         fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
                 .commit();
 

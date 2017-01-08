@@ -160,7 +160,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
         add_position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO check information before to go back + add description field (or delete it)
+                //TODO check information before to go back
                 if(position == null){
                     position = new Element(etxt_namePosition.getText().toString(),
                             sw_enabled.isChecked(),
@@ -273,7 +273,6 @@ public class MapViewFragmentSelectPosition extends Fragment {
                         Marker locationMarker = googleMap.addMarker(new MarkerOptions().position(latLng).title("Set this point"));
                         locationMarker.showInfoWindow();
                         //locationMarker.setDraggable(true);
-                        //TODO un peu pertrubant que la map bouge quand on appuie... (remets si tu préfères)
                         //googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                         //Fill address information before we can show the sliding panel
@@ -376,7 +375,6 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            // TODO Auto-generated method stub
             super.onPreExecute();
         }
 

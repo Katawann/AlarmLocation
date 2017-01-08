@@ -41,8 +41,6 @@ public class ServiceDbHelper extends SQLiteOpenHelper {
     public static final String KEY_CAFE = "cafe";
 
 
-    //TODO add end and start time for Rule (peut être plus encore à voir...)
-
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " ("
                     + KEY_ID + " INTEGER PRIMARY KEY,"

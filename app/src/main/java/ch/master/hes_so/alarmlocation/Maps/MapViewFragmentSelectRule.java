@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -69,6 +70,7 @@ public class MapViewFragmentSelectRule extends Fragment implements
     MapView mMapView;
     private GoogleMap googleMap;
     private SlidingUpPanelLayout slidingLayout;
+    private MapView mapView_rule;
     private int panelHeight;
     //private TextView placeAddress, placeLocation, placeCountry;
 
@@ -182,9 +184,6 @@ public class MapViewFragmentSelectRule extends Fragment implements
         //set layout slide listener
         slidingLayout = (SlidingUpPanelLayout) rootView.findViewById(R.id.sliding_layout_rule);
 
-        //Save original panel height
-        //panelHeight = slidingLayout.getPanelHeight();
-
         //Save half display height for sliding panel
         Display display = getActivity().getWindowManager().getDefaultDisplay();
         Point size = new Point();
@@ -193,6 +192,12 @@ public class MapViewFragmentSelectRule extends Fragment implements
 
         //Sliding layout hidden
         slidingLayout.setPanelHeight(panelHeight);
+
+        //Save half display height for Mapview
+        RelativeLayout layout = (RelativeLayout) rootView.findViewById(R.id.relLay_map);
+        ViewGroup.LayoutParams params = layout.getLayoutParams();
+        params.height = panelHeight;
+        layout.setLayoutParams(params);
 
         //Create GoogleApiClient object
         mGoogleApiClient = new GoogleApiClient.Builder(getContext())
@@ -211,13 +216,9 @@ public class MapViewFragmentSelectRule extends Fragment implements
         mGoogleApiClient.connect();
 
         //--- Get layout ---//
-        /*placeAddress = (TextView) rootView.findViewById(R.id.textViewPlaceAddress);
-        placeLocation = (TextView) rootView.findViewById(R.id.textViewPlaceLocation);
-        placeCountry = (TextView) rootView.findViewById(R.id.textViewPlaceCountry);*/
         txt_title = (TextView) rootView.findViewById(R.id.txt_title);
         sw_enabled = (Switch) rootView.findViewById(R.id.sw_enabled);
         etxt_namePosition = (EditText) rootView.findViewById(R.id.etxt_taskname);
-        //etxt_addressLocation = (EditText) rootView.findViewById(R.id.etxt_address);
         streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
         add_position = (Button) rootView.findViewById(R.id.btnAddPlace);
         sk_radius = (SeekBar) rootView.findViewById(R.id.sk_radius_pos);
@@ -248,7 +249,6 @@ public class MapViewFragmentSelectRule extends Fragment implements
                 alarmEnabled.setText(R.string.disabled);
             }
             etxt_namePosition.setText(rule.getElementName());
-            //etxt_addressLocation.setText(rule.getAddress());
             sk_radius.setProgress(rule.getRadius());
             txt_radius.setText(String.valueOf(rule.getRadius()));
 
@@ -259,12 +259,10 @@ public class MapViewFragmentSelectRule extends Fragment implements
             bar.setChecked(rule.getBar());
             cafe.setChecked(rule.getCafe());
 
-            //TODO streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
             //TODO init start and end
 
             slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.EXPANDED);
             slidingLayout.setPanelHeight(panelHeight);
-            //txt_title.setHeight(panelHeight);
             txt_title.setText(R.string.information);
             add_position.setText(R.string.modify);
         } else {
@@ -274,7 +272,6 @@ public class MapViewFragmentSelectRule extends Fragment implements
         /**
          *  ALL THE LISTENER
          */
-
         restaurant.setOnCheckedChangeListener(new checkBoxChangeClicker());
         supermarket.setOnCheckedChangeListener(new checkBoxChangeClicker());
         foodStore.setOnCheckedChangeListener(new checkBoxChangeClicker());
@@ -286,7 +283,7 @@ public class MapViewFragmentSelectRule extends Fragment implements
         sk_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                txt_radius.setText(String.valueOf(progress) + " meters");
+                txt_radius.setText(String.valueOf(progress) + R.string.meters);
                 handleNewLocation(myLocation);
             }
 
@@ -336,7 +333,7 @@ public class MapViewFragmentSelectRule extends Fragment implements
         add_position.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO check information before to go back + add description field (or delete it)
+                //TODO check information before to go back
                 if (rule == null) {
                     rule = new Element(etxt_namePosition.getText().toString(),
                             sw_enabled.isChecked(),
@@ -374,7 +371,6 @@ public class MapViewFragmentSelectRule extends Fragment implements
 
             @Override
             public void onPanelCollapsed(View panel) {
-                //txt_title.setHeight(panelHeight);
                 txt_title.setText(R.string.information);
             }
 
@@ -555,7 +551,6 @@ public class MapViewFragmentSelectRule extends Fragment implements
 
         @Override
         protected void onPreExecute() {
-            // TODO Auto-generated method stub
             super.onPreExecute();
         }
 
