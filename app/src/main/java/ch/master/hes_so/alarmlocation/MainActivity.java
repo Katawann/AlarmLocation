@@ -368,6 +368,9 @@ public class MainActivity extends AppCompatActivity
 
             //Send DataBase to service
             sendMessageToService(LocationService.MSG_UPDATE_ELEMENTS,taskDbHelper.getElementFromDB());
+
+            //Clear all notification
+            sendMessageToService(LocationService.MSG_DELETE_NOTIFY,1);
         }
 
         @Override

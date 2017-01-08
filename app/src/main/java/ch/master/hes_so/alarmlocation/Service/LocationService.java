@@ -1,5 +1,8 @@
 package ch.master.hes_so.alarmlocation.Service;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.location.Location;
@@ -36,6 +39,7 @@ import java.util.List;
 
 import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.List.Element;
+import ch.master.hes_so.alarmlocation.MainActivity;
 import ch.master.hes_so.alarmlocation.Maps.PlaceJSONParser;
 import ch.master.hes_so.alarmlocation.R;
 
@@ -58,6 +62,7 @@ public class LocationService extends Service implements
     public static final int MSG_UPDATE_ELEMENTS = 3;
     public static final int MSG_DELETE_ELEMENT = 4;
     public static final int MSG_UPDATE_ONE_ELEMENT = 5;
+    public static final int MSG_DELETE_NOTIFY = 6;
 
     private final Messenger mMessenger = new Messenger(new IncomingMessageHandler()); // Target we publish for clients to send messages to IncomingHandler.
     private List<Messenger> mClients = new ArrayList<Messenger>(); // Keeps track of all current registered clients.
@@ -69,6 +74,8 @@ public class LocationService extends Service implements
 
     private ArrayList<Element> elements;
     private ServiceDbHelper serviceDbHelper;
+
+    private String elementName = "";
 
 
     @Override
@@ -145,6 +152,7 @@ public class LocationService extends Service implements
 
                     if ((int) distance <= radius) {
                         Log.d(LOGTAG, "TO DO ALARM POSITION");
+                        createNotification("AlarmLocation",elements.get(i).getElementName(),455);
                     }
                 }
 
@@ -164,6 +172,7 @@ public class LocationService extends Service implements
                                     hairdresser,
                                     bar,
                                     cafe), null);
+                    elementName = elements.get(i).getElementName();
                 }
             }
         }
@@ -347,113 +356,145 @@ public class LocationService extends Service implements
         // Executed after the complete execution of doInBackground() method
         @Override
         protected void onPostExecute(List<HashMap<String, String>> list) {
-            if (list.size()>0) {
-                for(int i = 0; i<list.size();i++){
+            if (list.size() > 0) {
+                for (int i = 0; i < list.size(); i++) {
                     HashMap<String, String> hmPlace = list.get(i);
                     Log.d(LOGTAG, "TO DO ALARM RULE: " + hmPlace.get("place_name"));
                 }
+                createNotification("AlarmLocation",elementName,456);
 
             }
 
         }
     }
 
-        /**
-         * Send the data to all clients.
-         *
-         * @param
-         */
-        private void sendMessageToUI(int command, Location location) {
-            Iterator<Messenger> messengerIterator = mClients.iterator();
-            while (messengerIterator.hasNext()) {
-                Messenger messenger = messengerIterator.next();
-                try {
-                    // Send data
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelable("msg", (Parcelable) location);
-                    Message msg = Message.obtain(null, command);
-                    msg.setData(bundle);
-                    messenger.send(msg);
+    /**
+     * Send the data to all clients.
+     *
+     * @param
+     */
+    private void sendMessageToUI(int command, Location location) {
+        Iterator<Messenger> messengerIterator = mClients.iterator();
+        while (messengerIterator.hasNext()) {
+            Messenger messenger = messengerIterator.next();
+            try {
+                // Send data
+                Bundle bundle = new Bundle();
+                bundle.putParcelable("msg", (Parcelable) location);
+                Message msg = Message.obtain(null, command);
+                msg.setData(bundle);
+                messenger.send(msg);
 
-                } catch (RemoteException e) {
-                    // The client is dead. Remove it from the list.
-                    mClients.remove(messenger);
-                }
+            } catch (RemoteException e) {
+                // The client is dead. Remove it from the list.
+                mClients.remove(messenger);
             }
         }
+    }
 
-        /**
-         * Send the data to all clients.
-         *
-         * @param
-         */
-        private void sendMessageToUI(int command, String data) {
-            Iterator<Messenger> messengerIterator = mClients.iterator();
-            while (messengerIterator.hasNext()) {
-                Messenger messenger = messengerIterator.next();
-                try {
-                    // Send data
-                    Bundle bundle = new Bundle();
-                    bundle.putString("msg", data);
-                    Message msg = Message.obtain(null, command);
-                    msg.setData(bundle);
-                    messenger.send(msg);
+    /**
+     * Send the data to all clients.
+     *
+     * @param
+     */
+    private void sendMessageToUI(int command, String data) {
+        Iterator<Messenger> messengerIterator = mClients.iterator();
+        while (messengerIterator.hasNext()) {
+            Messenger messenger = messengerIterator.next();
+            try {
+                // Send data
+                Bundle bundle = new Bundle();
+                bundle.putString("msg", data);
+                Message msg = Message.obtain(null, command);
+                msg.setData(bundle);
+                messenger.send(msg);
 
-                } catch (RemoteException e) {
-                    // The client is dead. Remove it from the list.
-                    mClients.remove(messenger);
-                }
+            } catch (RemoteException e) {
+                // The client is dead. Remove it from the list.
+                mClients.remove(messenger);
             }
         }
+    }
 
-        public static boolean isRunning() {
+    public static boolean isRunning() {
 
-            return isRunning;
-        }
+        return isRunning;
+    }
 
-        /**
-         * Handle incoming messages from MainActivity
-         */
-        private class IncomingMessageHandler extends Handler { // Handler of incoming messages from clients.
-            @Override
-            public void handleMessage(Message msg) {
-                Log.d(LOGTAG, "handleMessage: " + msg.what);
-                switch (msg.what) {
-                    case MSG_REGISTER_CLIENT:
-                        mClients.add(msg.replyTo);
-                        break;
-                    case MSG_UNREGISTER_CLIENT:
-                        mClients.remove(msg.replyTo);
-                        break;
-                    case MSG_UPDATE_ELEMENTS:
-                        msg.getData().setClassLoader(Element.class.getClassLoader());
-                        elements = msg.getData().getParcelableArrayList("msg");
-                        updateElementToDB(elements);
-                        break;
-                    case MSG_DELETE_ELEMENT:
-                        int id = msg.getData().getInt("msg");
-                        serviceDbHelper.deleteElement(id);
-                        Log.d(LOGTAG,"Task deleted: " + id);
-                        break;
-                    case MSG_UPDATE_ONE_ELEMENT:
-                        msg.getData().setClassLoader(Element.class.getClassLoader());
-                        ArrayList<Element> elem = msg.getData().getParcelableArrayList("msg");
-                        serviceDbHelper.modifyElement(elem.get(0));
-                    default:
-                        super.handleMessage(msg);
-                }
+    /**
+     * Handle incoming messages from MainActivity
+     */
+    private class IncomingMessageHandler extends Handler { // Handler of incoming messages from clients.
+        @Override
+        public void handleMessage(Message msg) {
+            Log.d(LOGTAG, "handleMessage: " + msg.what);
+            switch (msg.what) {
+                case MSG_REGISTER_CLIENT:
+                    mClients.add(msg.replyTo);
+                    break;
+                case MSG_UNREGISTER_CLIENT:
+                    mClients.remove(msg.replyTo);
+                    break;
+                case MSG_UPDATE_ELEMENTS:
+                    msg.getData().setClassLoader(Element.class.getClassLoader());
+                    elements = msg.getData().getParcelableArrayList("msg");
+                    updateElementToDB(elements);
+                    break;
+                case MSG_DELETE_ELEMENT:
+                    int id = msg.getData().getInt("msg");
+                    serviceDbHelper.deleteElement(id);
+                    Log.d(LOGTAG, "Task deleted: " + id);
+                    break;
+                case MSG_UPDATE_ONE_ELEMENT:
+                    msg.getData().setClassLoader(Element.class.getClassLoader());
+                    ArrayList<Element> elem = msg.getData().getParcelableArrayList("msg");
+                    serviceDbHelper.modifyElement(elem.get(0));
+                    break;
+                case MSG_DELETE_NOTIFY:
+                    deleteNotification(455);
+                    deleteNotification(456);
+                    break;
+                default:
+                    super.handleMessage(msg);
             }
         }
+    }
 
     private void updateElementToDB(ArrayList<Element> elements) {
-        for(int i= 0; i<elements.size(); i++){
+        for (int i = 0; i < elements.size(); i++) {
             //Check if element exist in DataBase
-            if(serviceDbHelper.getElementWithId(elements.get(i).getId())==null){
+            if (serviceDbHelper.getElementWithId(elements.get(i).getId()) == null) {
                 serviceDbHelper.addNewElement(elements.get(i));
-            }
-            else {
+            } else {
                 serviceDbHelper.modifyElement(elements.get(i));
             }
         }
+    }
+
+    private final void createNotification(String title, String content, int id){
+        final NotificationManager mNotification = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        final Intent launchNotifiactionIntent = new Intent(this, MainActivity.class);
+        final PendingIntent pendingIntent = PendingIntent.getActivity(this,
+                999, launchNotifiactionIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        Notification.Builder builder = new Notification.Builder(this)
+                .setWhen(System.currentTimeMillis())
+                .setTicker("Test")
+                .setSmallIcon(R.drawable.places_ic_search)
+                .setContentTitle(title)
+                //.setContentTitle(getResources().getString(R.string.notification_title))
+                //.setContentText(getResources().getString(R.string.notification_desc))
+                .setContentText(content)
+                .setContentIntent(pendingIntent);
+
+        mNotification.notify(id, builder.build());
+    }
+
+    private void deleteNotification(int id){
+        final NotificationManager notificationManager = (NotificationManager)getSystemService(getApplicationContext().NOTIFICATION_SERVICE);
+        //Cancel notification by ID
+        notificationManager.cancel(id);
     }
 }
