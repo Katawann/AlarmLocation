@@ -70,15 +70,11 @@ public class MapViewFragmentSelectRule extends Fragment implements
     MapView mMapView;
     private GoogleMap googleMap;
     private SlidingUpPanelLayout slidingLayout;
-    private MapView mapView_rule;
     private int panelHeight;
-    //private TextView placeAddress, placeLocation, placeCountry;
 
     private TextView txt_title;
     private Switch sw_enabled;
     private EditText etxt_namePosition;
-    private EditText descriptionPosition;
-    //private EditText etxt_addressLocation;
     private SeekBar sk_radius;
     private TextView txt_radius;
     private TextView time_start;
@@ -283,7 +279,7 @@ public class MapViewFragmentSelectRule extends Fragment implements
         sk_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                txt_radius.setText(String.valueOf(progress) + R.string.meters);
+                txt_radius.setText(String.valueOf(progress) + "meters");
                 handleNewLocation(myLocation);
             }
 

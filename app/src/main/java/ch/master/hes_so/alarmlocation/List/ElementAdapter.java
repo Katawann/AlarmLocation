@@ -3,6 +3,7 @@ package ch.master.hes_so.alarmlocation.List;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.MainActivity;
 import ch.master.hes_so.alarmlocation.R;
 
@@ -66,6 +68,13 @@ public class ElementAdapter extends ArrayAdapter<Element> {
         //set the attributes for the views of the recycled view
         viewHolder.name.setText(element.getElementName());
         viewHolder.enabled.setChecked(element.isEnabled());
+
+        /* TODO
+        if (element.getType() == Globals.TYPE_POSITION){
+            convertView.setBackgroundColor(R.color.colorPrimary);
+        }else{
+            convertView.setBackgroundColor(R.color.colorPrimaryDark);
+        }*/
 
         viewHolder.enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override

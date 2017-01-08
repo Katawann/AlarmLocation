@@ -19,6 +19,6 @@ abstract public class Globals{
 
     public static final int DELETE_ELEMENT = 33;
 
-    public static final int MAX_RADIUS = 300; //TODO define a max value
+    public static final int MAX_RADIUS = 300;
 
 }

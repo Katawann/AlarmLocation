@@ -39,8 +39,6 @@ public class MainActivity extends AppCompatActivity
 
     private FragmentManager fragmentManager;
     private ListMenuFragment listElementFragment = new ListMenuFragment();
-    private MapViewFragmentSelectPosition mapViewFragmentSelectPosition = new MapViewFragmentSelectPosition();
-    private MapViewFragmentSelectRule mapViewFragmentSelectRules = new MapViewFragmentSelectRule();
 
     private boolean mIsBound;
     private Messenger mServiceMessenger = null;
@@ -209,7 +207,9 @@ public class MainActivity extends AppCompatActivity
             listElementFragment.updateList(taskDbHelper.getElementFromDB());
         }
 
+        //Delete fragment from the stack (we didn't press the back button)
         getSupportFragmentManager().popBackStack();
+
         fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
                 .commit();
 
@@ -232,7 +232,9 @@ public class MainActivity extends AppCompatActivity
             listElementFragment.updateList(taskDbHelper.getElementFromDB());
         }
 
+        //Delete fragment from the stack (we didn't press the back button)
         getSupportFragmentManager().popBackStack();
+
         fragmentManager.beginTransaction().replace(R.id.content_main, listElementFragment)
                 .commit();
 

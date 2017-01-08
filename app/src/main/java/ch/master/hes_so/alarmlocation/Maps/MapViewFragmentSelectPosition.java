@@ -50,12 +50,10 @@ public class MapViewFragmentSelectPosition extends Fragment {
     private GoogleMap googleMap;
     private SlidingUpPanelLayout slidingLayout;
     private int panelHeight;
-    //private TextView placeAddress, placeLocation, placeCountry;
 
     private TextView txt_title;
     private Switch sw_enabled;
     private EditText etxt_namePosition;
-    private EditText descriptionPosition;
     private EditText etxt_addressLocation;
     private SeekBar sk_radius;
     private TextView txt_radius;
@@ -103,10 +101,6 @@ public class MapViewFragmentSelectPosition extends Fragment {
         slidingLayout.setPanelHeight(0);
 
         //--- Get layout ---//
-
-        /*placeAddress = (TextView) rootView.findViewById(R.id.textViewPlaceAddress);
-        placeLocation = (TextView) rootView.findViewById(R.id.textViewPlaceLocation);
-        placeCountry = (TextView) rootView.findViewById(R.id.textViewPlaceCountry);*/
         txt_title = (TextView) rootView.findViewById(R.id.txt_title);
         sw_enabled = (Switch) rootView.findViewById(R.id.sw_enabled);
         etxt_namePosition = (EditText) rootView.findViewById(R.id.etxt_taskname);
@@ -293,9 +287,6 @@ public class MapViewFragmentSelectPosition extends Fragment {
                         String postalCode = addresses.get(0).getPostalCode();
                         String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
 
-                        /*placeAddress.setText(address);
-                        placeLocation.setText(postalCode + " " + city);
-                        placeCountry.setText(country);*/
                         etxt_addressLocation.setLines(3);
 
                         etxt_addressLocation.setText(address + "\n"

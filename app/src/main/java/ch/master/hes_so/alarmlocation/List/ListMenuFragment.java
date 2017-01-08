@@ -96,12 +96,6 @@ public class ListMenuFragment extends Fragment implements ElementAdapter.OnSwitc
             }
         });
 
-
-
-
-
-
-
         /**
          *  Boutton "+". Permet d'ajouter des nouvelles positions ou règles de déclenchement de l'alarme
          */
