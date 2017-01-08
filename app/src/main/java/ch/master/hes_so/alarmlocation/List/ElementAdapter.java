@@ -8,12 +8,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import ch.master.hes_so.alarmlocation.MainActivity;
 import ch.master.hes_so.alarmlocation.R;
 
 
@@ -40,8 +43,10 @@ public class ElementAdapter extends ArrayAdapter<Element> {
         this.res = context.getResources();
     }
 
+    private OnSwitchStateChangedCallback callback;
+
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public View getView(final int position, View convertView, ViewGroup parent) {
 
         if (convertView == null) {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.custom_button, parent, false);
@@ -62,6 +67,24 @@ public class ElementAdapter extends ArrayAdapter<Element> {
         viewHolder.name.setText(element.getElementName());
         viewHolder.enabled.setChecked(element.isEnabled());
 
+        viewHolder.enabled.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                callback.switchState(position,b);
+            }
+        });
+
         return convertView;
+    }
+
+    public void setCallback(OnSwitchStateChangedCallback callback){
+
+        this.callback = callback;
+    }
+
+
+    public interface OnSwitchStateChangedCallback {
+
+        public void switchState(int position, boolean state);
     }
 }

@@ -38,4 +38,15 @@
     <string name="start_hour">Choose a start hour</string>
     <string name="end_hour">Choose a end hour</string>
     <string name="set_point">Set this point ?</string>
+    <string name="enabled">Enabled</string>
+    <string name="disabled">Disable</string>
+    <string name="rules">Rules</string>
+    <string name="food_store">Food Store</string>
+    <string name="supermarket">Supermarket</string>
+    <string name="restaurant">Restaurant</string>
+    <string name="hairdresser">Hairdresser</string>
+    <string name="bar">Bar</string>
+    <string name="cafe">Cafe</string>
+    <string name="keyword">Keyword</string>
+    <string name="enter_a_keyword">Enter a keyword</string>
 </resources>

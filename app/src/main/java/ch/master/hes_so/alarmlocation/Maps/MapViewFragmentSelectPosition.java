@@ -25,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -37,7 +38,6 @@ import java.util.Locale;
 
 import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.List.Element;
-import ch.master.hes_so.alarmlocation.List.Position;
 import ch.master.hes_so.alarmlocation.R;
 
 /**
@@ -62,7 +62,8 @@ public class MapViewFragmentSelectPosition extends Fragment {
 
     private ImageView streetView;
     private Button add_position;
-    private Position position;
+    private Element position;
+    private LatLng mLatLng;
     private final static String LOGTAG = "MapViewFragment";
 
     OnMapPositionFragmentListener mCallback;
@@ -84,7 +85,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
     public void add_new_position(){
         position = null;
     }
-    public void modify_position(Position _position){
+    public void modify_position(Element _position){
         position = _position;
     }
 
@@ -126,8 +127,9 @@ public class MapViewFragmentSelectPosition extends Fragment {
             etxt_addressLocation.setText(position.getAddress());
             sk_radius.setProgress(position.getRadius());
             txt_radius.setText(String.valueOf(position.getRadius()));
-            //TODO streetView = (ImageView) rootView.findViewById(R.id.imageViewStreetView);
-            //TODO add marqueur et zoom sur le point déjà existant
+
+            //Restore last saved point
+            mLatLng = position.getLatLng();
 
             txt_title.setHeight(panelHeight);
             txt_title.setText(R.string.information);
@@ -135,6 +137,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
         }else{
             slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.COLLAPSED);
             slidingLayout.setPanelHeight(0);
+            mLatLng = null;
         }
 
         sk_radius.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -159,17 +162,20 @@ public class MapViewFragmentSelectPosition extends Fragment {
             public void onClick(View v) {
                 //TODO check information before to go back + add description field (or delete it)
                 if(position == null){
-                    position = new Position(etxt_namePosition.getText().toString(),
+                    position = new Element(etxt_namePosition.getText().toString(),
                             sw_enabled.isChecked(),
                             "",
                             etxt_addressLocation.getText().toString(),
-                            sk_radius.getProgress());
+                            sk_radius.getProgress(), mLatLng,Globals.TYPE_POSITION);
+                    Log.d(LOGTAG,"Position added: " + mLatLng.toString());
                 }else{
                     position.setElementName(etxt_namePosition.getText().toString());
                     position.setEnable(sw_enabled.isChecked());
                     position.setDescription("");
                     position.setAddress(etxt_addressLocation.getText().toString());
                     position.setRadius(sk_radius.getProgress());
+                    position.setLatLng(mLatLng);
+                    Log.d(LOGTAG,"Position modified: " + mLatLng.toString());
                 }
 
                 mCallback.OnReturnFromPosition(position);
@@ -223,11 +229,42 @@ public class MapViewFragmentSelectPosition extends Fragment {
                 //For showing a move to my location button
                 googleMap.setMyLocationEnabled(true);
 
+                //Zoom to last location saved and add marker
+                if(mLatLng!=null){
+                    googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mLatLng, 13));
+
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(mLatLng.latitude, mLatLng.longitude))      // Sets the center of the map to location user
+                            .zoom(17)                   // Sets the zoom
+                            .bearing(0)                 // Sets the orientation of the camera to north
+                            .tilt(40)                   // Sets the tilt of the camera to 30 degrees
+                            .build();                   // Creates a CameraPosition from the builder
+                    googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+                    googleMap.addMarker(new MarkerOptions().position(mLatLng).title("Your alarm location point"));
+                }
+
+                //Add StreetView Image in the sliding panel
+                if(mLatLng!=null){
+                    //--- Download StreetView image ---//
+                    StringBuilder sb = new StringBuilder("https://maps.googleapis.com/maps/api/streetview?");
+                    sb.append("size=600x300");
+                    sb.append("&location=" + mLatLng.latitude +"," + mLatLng.longitude);
+                    sb.append("&key=AIzaSyDM4I3MDC7y8dpcz9NJCpeAYCj0mTWGXT4");
+
+                    Log.d(LOGTAG,"URL: " + sb.toString());
+
+                    new DownloadImageTask(streetView).execute(sb.toString());   //Download StreetView image in a new Task
+                }
+
 
                 //Set LongClick listener
                 googleMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
                     @Override
                     public void onMapLongClick(LatLng latLng) {
+
+                        //Save latitude and longitude
+                        mLatLng = latLng;
 
                         //Clear precedent marker
                         googleMap.clear();
@@ -237,7 +274,7 @@ public class MapViewFragmentSelectPosition extends Fragment {
                         locationMarker.showInfoWindow();
                         //locationMarker.setDraggable(true);
                         //TODO un peu pertrubant que la map bouge quand on appuie... (remets si tu préfères)
-                        // googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                        //googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
                         //Fill address information before we can show the sliding panel
                         Geocoder geocoder;
@@ -288,8 +325,13 @@ public class MapViewFragmentSelectPosition extends Fragment {
                 googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
-                        //Hide the sliding layout if we only touch the map
-                        slidingLayout.setPanelHeight(0);
+                        if (slidingLayout.getPanelHeight() > 0) {
+                            //Hide the sliding layout if we only touch the map
+                            slidingLayout.setPanelHeight(0);
+                        } else {
+                            slidingLayout.setPanelHeight(panelHeight);
+                        }
+
                     }
                 });
             }

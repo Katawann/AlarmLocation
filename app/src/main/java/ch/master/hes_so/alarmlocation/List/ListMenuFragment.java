@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +14,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.CompoundButton;
 import android.widget.ListView;
+import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -23,14 +27,20 @@ import ch.master.hes_so.alarmlocation.R;
 /**
  * Created by quent on 03/11/2016.
  */
-public class ListMenuFragment extends Fragment {
+public class ListMenuFragment extends Fragment implements ElementAdapter.OnSwitchStateChangedCallback{
 
     private ArrayList<Element> itemsOfElement = new ArrayList<Element>();
     private ElementAdapter adapter;
     OnListMenuFragmentListener mCallback;
 
+    @Override
+    public void switchState(int position, boolean state) {
+        mCallback.OnInteractionListMenu(Globals.UPDATE_ELEMENT,itemsOfElement.get(position).getId(),state);
+    }
+
+
     public interface OnListMenuFragmentListener{
-        void OnInteractionListMenu(int fragmentCaller, int id);
+        void OnInteractionListMenu(int fragmentCaller, int id, boolean state);
     }
 
     @Override
@@ -72,23 +82,30 @@ public class ListMenuFragment extends Fragment {
 
         ListView customListView = (ListView) view.findViewById(R.id.lst_Elements);
         adapter = new ElementAdapter(view.getContext(), itemsOfElement);
+        adapter.setCallback(this);
         customListView.setAdapter(adapter);
 
         customListView.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (itemsOfElement.get(position).getType() == Globals.TYPE_POSITION){
-                    mCallback.OnInteractionListMenu(Globals.OPEN_POSITION, itemsOfElement.get(position).getId());
+                    mCallback.OnInteractionListMenu(Globals.OPEN_POSITION, itemsOfElement.get(position).getId(),false);
                 }else if (itemsOfElement.get(position).getType() == Globals.TYPE_RULE){
-                    mCallback.OnInteractionListMenu(Globals.OPEN_RULE, itemsOfElement.get(position).getId());
+                    mCallback.OnInteractionListMenu(Globals.OPEN_RULE, itemsOfElement.get(position).getId(),false);
                 }
             }
         });
 
+
+
+
+
+
+
         /**
          *  Boutton "+". Permet d'ajouter des nouvelles positions ou règles de déclenchement de l'alarme
          */
-        FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        final FloatingActionButton fab = (FloatingActionButton) view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +128,7 @@ public class ListMenuFragment extends Fragment {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
                                 //Yes button clicked
-                                mCallback.OnInteractionListMenu(Globals.DELETE_ELEMENT,adapter.getItem(index).getId());
+                                mCallback.OnInteractionListMenu(Globals.DELETE_ELEMENT,adapter.getItem(index).getId(),false);
                                 dialog.dismiss();
                                 break;
 
@@ -167,12 +184,12 @@ public class ListMenuFragment extends Fragment {
 
                 if (which == 0){
 
-                    mCallback.OnInteractionListMenu(Globals.ADD_POSITION,-1);
+                    mCallback.OnInteractionListMenu(Globals.ADD_POSITION,-1,false);
                     dialog.dismiss();
 
                 }else if(which == 1){
 
-                    mCallback.OnInteractionListMenu(Globals.ADD_RULE,-1);
+                    mCallback.OnInteractionListMenu(Globals.ADD_RULE,-1,false);
                     dialog.dismiss();
                 }
             }

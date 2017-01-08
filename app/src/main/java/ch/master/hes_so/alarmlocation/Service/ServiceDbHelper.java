@@ -1,4 +1,4 @@
-package ch.master.hes_so.alarmlocation;
+package ch.master.hes_so.alarmlocation.Service;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,20 +6,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+
 import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
+
+import ch.master.hes_so.alarmlocation.Globals;
 import ch.master.hes_so.alarmlocation.List.Element;
 
 
 /**
  * Created by quent on 05/01/2017.
  */
-public class FeedElementDbHelper extends SQLiteOpenHelper {
+public class ServiceDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     public static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "FeedPosition.db";
+    public static final String DATABASE_NAME = "ServicePosition.db";
 
-    public static final String TABLE_NAME = "position";
+    public static final String TABLE_NAME = "service";
     public static final String KEY_ID = "id";
     public static final String KEY_TYPE = "type";
     public static final String KEY_NAME = "name";
@@ -59,9 +63,9 @@ public class FeedElementDbHelper extends SQLiteOpenHelper {
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
-    private final static String LOGTAG = "FeedElementDbHelper";
+    private final static String LOGTAG = "ServiceDbHelper";
 
-    public FeedElementDbHelper(Context context) {
+    public ServiceDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
     public void onCreate(SQLiteDatabase db) {

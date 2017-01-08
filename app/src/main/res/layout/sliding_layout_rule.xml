@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
-    android:layout_gravity="bottom">
+    android:layout_gravity="bottom"
+    app:layout_scrollFlags="scroll">
 
     <TextView
             android:text="TextView"
@@ -35,8 +37,16 @@
                 android:textSize="18sp"
                 android:elevation="1dp" />
 
+            <TextView
+                android:text="@string/enabled"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textViewAlarmEnabled"
+                android:layout_weight="0.13"
+                android:paddingLeft="50dp" />
+
             <Switch
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/sw_enabled"
                 android:elevation="0dp"
@@ -55,7 +65,8 @@
             android:fontFamily="sans-serif"
             android:hint="@string/give_name_task"
             android:textSize="14sp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginBottom="20dp" />
 
     <LinearLayout
         android:orientation="horizontal"
@@ -158,7 +169,7 @@
     </LinearLayout>
 
     <TextView
-        android:text="@string/address"
+        android:text="@string/rules"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
@@ -167,19 +178,97 @@
         android:fontFamily="sans-serif"
         android:gravity="bottom"
         android:textSize="18sp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="20dp" />
 
-    <EditText
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
+
+            <CheckBox
+                android:text="@string/restaurant"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleRestaurant"
+                android:layout_marginLeft="5dp" />
+
+            <CheckBox
+                android:text="@string/food_store"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleFoodStore"
+                android:layout_width="wrap_content" />
+
+            <CheckBox
+                android:text="@string/bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleBar"
+                android:layout_marginRight="5dp" />
+
+        </TableRow>
+
+        <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:inputType="textMultiLine"
-            android:ems="10"
-            android:id="@+id/etxt_address"
-            android:layout_marginLeft="20sp"
-            android:layout_weight="3"
-        android:textSize="14sp" />
+            android:layout_height="match_parent" >
 
-        <ImageView
+            <CheckBox
+                android:text="@string/supermarket"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleSupermarket"
+                android:layout_marginLeft="5dp" />
+
+            <CheckBox
+                android:text="@string/hairdresser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleHairdresser" />
+
+            <CheckBox
+                android:text="@string/cafe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/checkBoxRuleCafe"
+                android:layout_marginRight="5dp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+
+            <TextView
+                android:text="@string/keyword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/textViewRuleKeyword"
+                android:textSize="18sp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:layout_marginTop="20dp" />
+
+        </TableRow>
+
+        <TableRow>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textPersonName"
+                android:ems="10"
+                android:id="@+id/etxt_taskKeyword"
+                android:hint="@string/enter_a_keyword"
+                android:textSize="14sp"
+                android:maxLength="15"
+                android:layout_marginLeft="20sp" />
+        </TableRow>
+    </TableLayout>
+
+    <ImageView
             app:srcCompat="@android:color/transparent"
             android:id="@+id/imageViewStreetView"
             android:layout_width="match_parent"
